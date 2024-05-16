@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:ekod_tp3/features/todos/todos.dart';
 import 'package:equatable/equatable.dart';
@@ -12,17 +14,27 @@ class TodosBloc extends Bloc<TodosEvent, TodosState> {
   // Constructeur du Bloc, nécessitant un repository pour les todos.
   TodosBloc({
     required this.todosRepository,
-  }) : super(const TodosState()) {
-    // Écoute les événements de type `TodosFetchRequested`.
-    on<TodosFetchRequested>((event, emit) async {
-      // Émet un état de chargement.
-      emit(const TodosState(isLoading: true));
-      // Récupère les tâches à faire à partir du repository.
-      final todos = await todosRepository.fetchTodos();
-      // Émet un nouvel état avec les tâches récupérées.
-      emit(TodosState(todos: todos));
+  }) : super(const TodosState(isLoading: true)) {
+    // Écoute les événements de type `TodosLoadRequested`.
+    on<TodosLoadRequested>((event, emit) async {
+      todosRepository.loadTodos();
+      _todosStream = todosRepository.todosStream.listen((todos) {
+        add(TodosChanged(todos));
+      });
+    });
+    // Écoute les événements de type `TodosChanged`.
+    on<TodosChanged>((event, emit) async {
+      emit(TodosState(todos: event.todos));
     });
   }
 
   final TodosRepository todosRepository;
+
+  StreamSubscription<List<Todo>>? _todosStream;
+
+  @override
+  Future<void> close() {
+    _todosStream?.cancel();
+    return super.close();
+  }
 }

@@ -10,5 +10,13 @@ sealed class TodosEvent extends Equatable {
   List<Object> get props => [];
 }
 
-// Définition de l'événement pour demander la récupération des todos.
-class TodosFetchRequested extends TodosEvent {}
+class TodosLoadRequested extends TodosEvent {}
+
+class TodosChanged extends TodosEvent {
+  const TodosChanged(this.todos);
+
+  final List<Todo> todos;
+
+  @override
+  List<Object> get props => [todos];
+}

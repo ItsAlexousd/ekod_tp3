@@ -12,7 +12,7 @@ class TodosView extends StatelessWidget {
       // récupérer les todos dès l'initialisation du Bloc.
       create: (context) => TodosBloc(
         todosRepository: context.read<TodosRepository>(),
-      )..add(TodosFetchRequested()),
+      )..add(TodosLoadRequested()),
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
@@ -37,33 +37,24 @@ class TodosView extends StatelessWidget {
                 );
               }
               // Ajoute un indicateur de rafraîchissement (pull to refresh).
-              return RefreshIndicator(
-                // Couleur de l'indicateur de rafraîchissement.
-                color: Colors.black,
-                // Action déclenchée lors du rafraîchissement.
-                onRefresh: () async {
-                  context.read<TodosBloc>().add(TodosFetchRequested());
+              return ListView.separated(
+                // Marges intérieures de la liste.
+                padding: const EdgeInsets.all(16),
+                // Nombre d'éléments dans la liste.
+                itemCount: state.todos.length,
+                // Séparateur entre les éléments de la liste, avec une
+                // hauteur de 16px.
+                separatorBuilder: (_, __) => const SizedBox(height: 16),
+                // Constructeur d'éléments de la liste.
+                itemBuilder: (_, index) {
+                  // Récupère chaque todo par son index.
+                  final todo = state.todos[index];
+                  // Retourne une carte de todo.
+                  return TodoCard(
+                    title: todo.title,
+                    isCompleted: todo.isCompleted,
+                  );
                 },
-                // Liste des todos avec des séparateurs entre les éléments.
-                child: ListView.separated(
-                  // Marges intérieures de la liste.
-                  padding: const EdgeInsets.all(16),
-                  // Nombre d'éléments dans la liste.
-                  itemCount: state.todos.length,
-                  // Séparateur entre les éléments de la liste, avec une
-                  // hauteur de 16px.
-                  separatorBuilder: (_, __) => const SizedBox(height: 16),
-                  // Constructeur d'éléments de la liste.
-                  itemBuilder: (_, index) {
-                    // Récupère chaque todo par son index.
-                    final todo = state.todos[index];
-                    // Retourne une carte de todo.
-                    return TodoCard(
-                      title: todo.title,
-                      isCompleted: todo.isCompleted,
-                    );
-                  },
-                ),
               );
             },
           ),
