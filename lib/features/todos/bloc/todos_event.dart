@@ -4,19 +4,21 @@ part of 'todos_bloc.dart';
 sealed class TodosEvent extends Equatable {
   const TodosEvent();
 
-  // Méthode pour définir les propriétés utilisées pour la comparaison
-  // d'égalité.
+  // Propriétés utilisées pour la comparaison d'égalité.
   @override
   List<Object> get props => [];
 }
 
-class TodosLoadRequested extends TodosEvent {}
-
+// Définition de l'événement `TodosChanged`, déclenché lorsque la liste
+// des todos change.
 class TodosChanged extends TodosEvent {
   const TodosChanged(this.todos);
 
+  // Liste des todos.
   final List<Todo> todos;
 
+  // Redéfinition de la méthode `props` pour inclure la liste des todos,
+  // permettant une comparaison d'égalité basée sur le contenu des todos.
   @override
   List<Object> get props => [todos];
 }

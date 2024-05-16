@@ -15,25 +15,29 @@ class TodosBloc extends Bloc<TodosEvent, TodosState> {
   TodosBloc({
     required this.todosRepository,
   }) : super(const TodosState(isLoading: true)) {
-    // Écoute les événements de type `TodosLoadRequested`.
-    on<TodosLoadRequested>((event, emit) async {
-      todosRepository.loadTodos();
-      _todosStream = todosRepository.todosStream.listen((todos) {
-        add(TodosChanged(todos));
-      });
+    // Charge les tâches à faire depuis le repository.
+    todosRepository.loadTodos();
+    // Écoute les changements dans le flux de todos et déclenche un événement
+    // `TodosChanged` quand les données sont mises à jour.
+    _todosStream = todosRepository.todosStream.listen((todos) {
+      add(TodosChanged(todos));
     });
+
     // Écoute les événements de type `TodosChanged`.
     on<TodosChanged>((event, emit) async {
+      // Émet un nouvel état avec la liste mise à jour des tâches.
       emit(TodosState(todos: event.todos));
     });
   }
 
   final TodosRepository todosRepository;
 
+  // Abonnement au flux des todos pour écouter les mises à jour.
   StreamSubscription<List<Todo>>? _todosStream;
 
   @override
   Future<void> close() {
+    // Annule l'abonnement au flux lorsqu'on ferme le Bloc.
     _todosStream?.cancel();
     return super.close();
   }

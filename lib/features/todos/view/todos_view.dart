@@ -8,11 +8,10 @@ class TodosView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      // Création du Bloc pour les todos et envoie d'un événement pour
-      // récupérer les todos dès l'initialisation du Bloc.
+      // Création du Bloc pour les todos.
       create: (context) => TodosBloc(
         todosRepository: context.read<TodosRepository>(),
-      )..add(TodosLoadRequested()),
+      ),
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
@@ -36,7 +35,6 @@ class TodosView extends StatelessWidget {
                   ),
                 );
               }
-              // Ajoute un indicateur de rafraîchissement (pull to refresh).
               return ListView.separated(
                 // Marges intérieures de la liste.
                 padding: const EdgeInsets.all(16),
