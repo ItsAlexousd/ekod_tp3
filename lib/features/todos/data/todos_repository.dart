@@ -11,7 +11,7 @@ class TodosRepository {
   final SupabaseClient _client;
 
   // Contrôleur de flux pour diffuser la liste des todos.
-  final BehaviorSubject<List<Todo>> _todosStreamController = BehaviorSubject();
+  final _todosStreamController = BehaviorSubject<List<Todo>>();
 
   // Flux des todos pour que le Bloc puissent écouter les changements.
   Stream<List<Todo>> get todosStream => _todosStreamController.stream;
